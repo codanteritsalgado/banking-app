@@ -23,3 +23,8 @@ To get started with this project, please create your own branch for making chang
     - `python manage.py makemigrations`
     - `python manage.py migrate`
 6. You're good to go! now you can test the available endpoints.
+
+### Storage Folder
+In this section you'll find access to a Google Drive folder, this will contain all the elements required for creating a new brand, including the brand's identity pdf 
+
+https://drive.google.com/drive/folders/1_hQUVcf73VCGgjq2tWB3eWpPrG0yCzlV?usp=sharing

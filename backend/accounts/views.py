@@ -42,17 +42,27 @@ class UserViewSet(viewsets.ViewSet):
         return Response(serializer.data)
     
     @csrf_exempt
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=['get', 'post'])
     def login(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)  # Log in the user
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key}, status=status.HTTP_200_OK)
-        else:
-            return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        if request.method == 'GET':
+            data = {
+                "message": "To log in, send a POST request to this endpoint with 'username' and 'password' in the request body.",
+                "example": {
+                    "username": "your_username",
+                    "password": "your_password"
+                }
+            }
+            return Response(data, status=status.HTTP_200_OK)
+        elif request.method == 'POST':
+            username = request.data.get('username')
+            password = request.data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)  # Log in the user
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({'token': token.key}, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
     @action(detail=False, methods=['post'])
     def logout(self, request):
@@ -62,3 +72,47 @@ class UserViewSet(viewsets.ViewSet):
             return Response({'message': 'Logout successful'}, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'User not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    @action(detail=False, methods=['get'])
+    def index(self, request):
+        data = {
+            'message': 'Welcome to the uUser API index page. You can find the list of available endpoints here.',
+            'endpoints': [
+                {
+                    'page':'List users',
+                    'url': request.build_absolute_uri('/api/user/list/'),
+                    'requires_auth':True,
+                    'description':'Show a list of existent users',
+                    'supported_methods':['GET'],
+                },
+                {
+                    'page':'Create User',
+                    'url': request.build_absolute_uri('/api/user/create/'),
+                    'requires_auth':False,
+                    'description':'Let a new user create his own account',
+                    'supported_methods':['POST'],
+                },
+                {
+                    'page':'User Profile',
+                    'url': request.build_absolute_uri('/api/user/profile/'),
+                    'requires_auth':True,
+                    'description':'Show the account details',
+                    'supported_methods':['GET'],
+                },
+                {
+                    'page':'Login',
+                    'url': request.build_absolute_uri('/api/user/login/'),
+                    'requires_auth':False,
+                    'description':'Let the user access his account',
+                    'supported_methods':['POST'],
+                },
+                {
+                    'page':'Logout',
+                    'url': request.build_absolute_uri('/api/user/logout/'),
+                    'requires_auth':True,
+                    'description':'Let the user end his sessión, destroying his token',
+                    'supported_methods':['POST'],
+                },
+            ]
+        }
+        return Response(data)

@@ -1,7 +1,6 @@
 version: "3"
 services:
-
-  django:
+  backend:
     build: .
     ports:
       - 8002:8000
@@ -9,7 +8,6 @@ services:
       - .:/app
     depends_on:
       - postgres
-
   postgres:
     image: postgres:15.6-alpine3.18
     ports:

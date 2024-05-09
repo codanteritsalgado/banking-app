@@ -1,0 +1,32 @@
+version: '3'
+services:
+  backend:
+    build: .
+    ports:
+      - "8003:80"
+    volumes:
+      - ".:/var/www"
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: prueba
+      DB_USERNAME: prueba
+      DB_PASSWORD: prueba
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mariadb:10.5.12
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: prueba
+      MYSQL_DATABASE: prueba
+      MYSQL_USER: prueba
+      MYSQL_PASSWORD: prueba
+    ports:
+        - "3308:3306"
+    volumes:
+          - "db-data2:/var/lib/mysql"
+volumes:
+  db-data2:
